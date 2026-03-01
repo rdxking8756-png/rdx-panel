@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>RDX Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{--p1:#FF416C;--v1:#8B5CF6;--b1:#00B4D8;--g1:#10B981;--r1:#EF4444;--o1:#F59E0B;
+  --gm:linear-gradient(135deg,#FF416C,#8B5CF6);--gb:linear-gradient(135deg,#FF416C,#FF4B2B,#8B5CF6);
+  --gbl:linear-gradient(135deg,#00B4D8,#0077B6);--gg:linear-gradient(135deg,#10B981,#059669);
+  --go:linear-gradient(135deg,#F59E0B,#D97706);--gr:linear-gradient(135deg,#EF4444,#DC2626);
+  --gcy:linear-gradient(135deg,#06B6D4,#0891B2);
+  --white:#fff;--lt:#F8FAFC;--gray:#64748B;--dark:#1E293B;--bdr:#E2E8F0;--bg:#F1F5F9;}
+body{font-family:'Poppins',sans-serif;background:var(--bg);min-height:100vh;overflow-x:hidden;}
+.bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;
+  background:radial-gradient(circle at 10% 10%,rgba(139,92,246,0.07) 0%,transparent 50%),radial-gradient(circle at 90% 90%,rgba(255,65,108,0.07) 0%,transparent 50%);}
+/* LOGIN */
+.lscr{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;background:linear-gradient(160deg,#1a1a2e,#16213e,#0f3460);justify-content:center;align-items:center;padding:18px;}
+.lscr.on{display:flex;}
+.lcard{background:#fff;border-radius:26px;width:100%;max-width:370px;overflow:hidden;box-shadow:0 28px 75px rgba(0,0,0,0.5);animation:up .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes up{from{opacity:0;transform:translateY(35px) scale(.94);}to{opacity:1;transform:translateY(0) scale(1);}}
+.ltop{background:var(--gm);padding:32px 22px 50px;text-align:center;position:relative;}
+.ltop::after{content:'';position:absolute;bottom:-1px;left:0;width:100%;height:42px;background:#fff;border-radius:50% 50% 0 0/100% 100% 0 0;}
+.lbody{padding:14px 22px 22px;}
+.ig{position:relative;margin-bottom:11px;}
+.iico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94A3B8;font-size:0.88rem;pointer-events:none;}
+.inp{width:100%;padding:12px 12px 12px 38px;border:1.5px solid #E2E8F0;border-radius:12px;font-family:'Poppins',sans-serif;font-size:0.85rem;color:#1E293B;background:#F8FAFC;outline:none;transition:all .22s;}
+.inp:focus{border-color:var(--v1);background:#fff;box-shadow:0 0 0 3px rgba(139,92,246,0.1);}
+.inp::placeholder{color:#CBD5E1;}
+.eyebtn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94A3B8;font-size:.95rem;padding:3px;}
+.bgrd{width:100%;padding:13px;border:none;border-radius:50px;background:var(--gb);color:#fff;font-family:'Poppins',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;letter-spacing:1px;box-shadow:0 7px 20px rgba(255,65,108,0.38);transition:all .22s;}
+.bgrd:hover{transform:translateY(-2px);box-shadow:0 11px 28px rgba(255,65,108,0.5);}
+.msg{padding:9px 12px;border-radius:9px;font-size:.77rem;display:none;margin-top:8px;font-weight:500;}
+.msg.on{display:block;animation:fup .3s ease;}
+@keyframes fup{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+.merr{background:#FEF2F2;color:var(--r1);border:1px solid #FECACA;}
+.mok{background:#F0FDF4;color:var(--g1);border:1px solid #BBF7D0;}
+.mwarn{background:#FFFBEB;color:var(--o1);border:1px solid #FDE68A;}
+.minfo{background:#EFF6FF;color:#3B82F6;border:1px solid #BFDBFE;}
+/* ADMIN LAYOUT */
+.admin{display:none;min-height:100vh;position:relative;z-index:1;}
+.admin.on{display:flex;flex-direction:column;}
+/* TOPBAR */
+.topbar{background:#fff;padding:11px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 14px rgba(0,0,0,0.07);position:sticky;top:0;z-index:200;}
+.tlogo{font-size:1.08rem;font-weight:800;background:var(--gm);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.3px;}
+.tbadge{padding:3px 11px;background:linear-gradient(135deg,rgba(255,65,108,0.08),rgba(139,92,246,0.08));border:1px solid rgba(139,92,246,0.18);border-radius:50px;font-size:.68rem;font-weight:700;color:var(--v1);}
+.fblive{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--gray);font-weight:600;}
+.fbdot{width:7px;height:7px;border-radius:50%;background:var(--g1);animation:bl 1.5s infinite;}
+@keyframes bl{0%,100%{opacity:1;}50%{opacity:.35;}}
+.tbtn{padding:6px 14px;border-radius:50px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;transition:all .22s;}
+.tb-out{border:1.5px solid #FECACA;color:var(--r1);background:#fff;}
+.tb-out:hover{background:var(--r1);color:#fff;border-color:var(--r1);}
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;padding:13px 14px 0;}
+.scard{background:#fff;border-radius:14px;padding:13px;box-shadow:0 2px 10px rgba(0,0,0,0.05);position:relative;overflow:hidden;}
+.scard::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;border-radius:4px 0 0 4px;}
+.sc-pk::before{background:var(--gm);}.sc-bl::before{background:var(--gbl);}.sc-gn::before{background:var(--gg);}.sc-or::before{background:var(--go);}.sc-rd::before{background:var(--gr);}
+.snum{font-size:1.6rem;font-weight:800;color:var(--dark);line-height:1;}
+.slbl{font-size:.64rem;color:var(--gray);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:.4px;}
+.sico{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:1.6rem;opacity:.1;}
+/* TABS */
+.tabnav{display:flex;overflow-x:auto;padding:11px 14px 0;gap:6px;scrollbar-width:none;}
+.tabnav::-webkit-scrollbar{display:none;}
+.tabbt{padding:8px 14px;border-radius:10px;border:1.5px solid var(--bdr);font-family:'Poppins',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .22s;color:var(--gray);background:#fff;flex-shrink:0;display:flex;align-items:center;gap:5px;}
+.tabbt:hover{border-color:var(--v1);color:var(--v1);}
+.tabbt.act{background:var(--gm);color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(139,92,246,0.32);}
+.tabcnt{display:none;padding:13px 14px;animation:fup .3s ease;}
+.tabcnt.on{display:block;}
+/* CARDS */
+.wc{background:#fff;border-radius:16px;padding:16px;margin-bottom:11px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+.wc-title{font-size:.86rem;font-weight:700;color:var(--dark);margin-bottom:13px;display:flex;align-items:center;gap:7px;}
+/* FORM */
+.flbl{font-size:.67rem;font-weight:700;color:var(--gray);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;display:block;}
+.finp{width:100%;padding:10px 12px;border:1.5px solid var(--bdr);border-radius:10px;font-family:'Poppins',sans-serif;font-size:.84rem;color:var(--dark);background:var(--lt);outline:none;transition:all .22s;}
+.finp:focus{border-color:var(--v1);background:#fff;box-shadow:0 0 0 3px rgba(139,92,246,0.08);}
+.finp::placeholder{color:#CBD5E1;}
+textarea.finp{height:75px;resize:vertical;}
+select.finp{cursor:pointer;}
+.frow{margin-bottom:11px;}
+.fhint{font-size:.68rem;color:var(--gray);margin-top:3px;line-height:1.4;}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+/* BUTTONS */
+.bsm{padding:8px 14px;border:none;border-radius:9px;font-family:'Poppins',sans-serif;font-size:.74rem;font-weight:700;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:4px;}
+.bp{background:var(--gm);color:#fff;box-shadow:0 3px 9px rgba(255,65,108,0.28);}
+.bp:hover{transform:translateY(-1px);}
+.bbl{background:var(--gbl);color:#fff;}.bgn{background:var(--gg);color:#fff;}.bor{background:var(--go);color:#fff;}.brd{background:var(--gr);color:#fff;}.bcy{background:var(--gcy);color:#fff;}
+.bgr{background:var(--lt);color:var(--gray);border:1.5px solid var(--bdr);}.bgr:hover{background:var(--bdr);}
+.bpur{background:linear-gradient(135deg,#8B5CF6,#6D28D9);color:#fff;}
+.bfull{width:100%;justify-content:center;}
+.bgrp{display:flex;gap:7px;flex-wrap:wrap;}
+/* TOGGLE */
+.trow{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--bdr);}
+.trow:last-child{border-bottom:none;}
+.tinfo{flex:1;padding-right:12px;}
+.ttitle{font-size:.83rem;font-weight:600;color:var(--dark);}
+.tdesc{font-size:.69rem;color:var(--gray);margin-top:2px;}
+.sw{position:relative;display:inline-block;width:45px;height:23px;flex-shrink:0;}
+.sw input{opacity:0;width:0;height:0;}
+.sl{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#E2E8F0;transition:.28s;border-radius:23px;}
+.sl::before{position:absolute;content:"";height:17px;width:17px;left:3px;bottom:3px;background:#fff;transition:.28s;border-radius:50%;box-shadow:0 2px 5px rgba(0,0,0,0.15);}
+input:checked+.sl{background:var(--gm);}
+input:checked+.sl::before{transform:translateX(22px);}
+/* SEARCH */
+.sch{position:relative;margin-bottom:11px;}
+.sico2{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#94A3B8;font-size:.9rem;}
+.sinp{width:100%;padding:10px 10px 10px 35px;border:1.5px solid var(--bdr);border-radius:10px;font-family:'Poppins',sans-serif;font-size:.82rem;color:var(--dark);background:var(--lt);outline:none;transition:all .22s;}
+.sinp:focus{border-color:var(--v1);background:#fff;}
+/* USER CARD */
+.ucrd{background:#fff;border:1.5px solid var(--bdr);border-radius:14px;padding:13px;margin-bottom:8px;transition:all .18s;}
+.ucrd:hover{border-color:rgba(139,92,246,0.25);box-shadow:0 4px 14px rgba(0,0,0,0.06);}
+.utop{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:7px;margin-bottom:9px;}
+.uleft{display:flex;align-items:center;gap:10px;}
+.uav{width:42px;height:42px;border-radius:50%;background:var(--gm);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;overflow:hidden;}
+.uav img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.unm{font-size:.85rem;font-weight:700;color:var(--dark);}
+.uem{font-size:.7rem;color:var(--gray);margin-top:1px;}
+.uph{font-size:.67rem;color:var(--v1);margin-top:1px;font-weight:500;}
+.upw{font-size:.67rem;color:var(--o1);margin-top:1px;font-weight:600;cursor:pointer;}
+.uuid{font-size:.6rem;color:#CBD5E1;margin-top:1px;font-family:monospace;}
+.bdg{padding:3px 10px;border-radius:50px;font-size:.67rem;font-weight:700;}
+.bact{background:rgba(16,185,129,0.1);color:var(--g1);border:1px solid rgba(16,185,129,0.22);}
+.bban{background:rgba(239,68,68,0.1);color:var(--r1);border:1px solid rgba(239,68,68,0.22);}
+.bpend{background:rgba(245,158,11,0.1);color:var(--o1);border:1px solid rgba(245,158,11,0.22);}
+/* MINI SWITCHES FOR SERVICES */
+.svctw{background:var(--lt);border-radius:10px;padding:9px;margin-bottom:9px;}
+.svct-lbl{font-size:.63rem;font-weight:700;color:var(--gray);letter-spacing:.8px;text-transform:uppercase;margin-bottom:7px;}
+.svcchips{display:flex;flex-wrap:wrap;gap:5px;}
+.svcc{display:flex;align-items:center;gap:5px;padding:5px 9px;background:#fff;border:1.5px solid var(--bdr);border-radius:8px;font-size:.7rem;font-weight:600;color:var(--gray);transition:all .18s;}
+.svcc.on{border-color:rgba(139,92,246,0.28);color:var(--v1);background:rgba(139,92,246,0.04);}
+.msw{position:relative;display:inline-block;width:30px;height:16px;}
+.msw input{opacity:0;width:0;height:0;}
+.msl{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#E2E8F0;transition:.25s;border-radius:16px;}
+.msl::before{position:absolute;content:"";height:10px;width:10px;left:3px;bottom:3px;background:#fff;transition:.25s;border-radius:50%;}
+.msw input:checked+.msl{background:var(--gm);}
+.msw input:checked+.msl::before{transform:translateX(14px);}
+/* SERVICE CARD */
+.scrd{display:flex;align-items:flex-start;justify-content:space-between;padding:12px;border:1.5px solid var(--bdr);border-radius:12px;margin-bottom:8px;background:var(--lt);transition:all .18s;gap:7px;}
+.scrd:hover{border-color:rgba(139,92,246,0.22);background:#fff;}
+.sleft{flex:1;min-width:0;}
+.snm{font-size:.84rem;font-weight:700;color:var(--dark);margin-bottom:2px;}
+.surl{font-size:.65rem;color:var(--b1);word-break:break-all;line-height:1.4;}
+.smeta{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap;}
+.stag{padding:2px 7px;border-radius:5px;font-size:.62rem;font-weight:700;background:#EFF6FF;color:#3B82F6;}
+.stag-post{background:#FFF7ED;color:var(--o1);}.stag-auth{background:#F0FDF4;color:var(--g1);}
+/* APPROVAL CARDS */
+.appcrd{background:#fff;border:1.5px solid var(--bdr);border-radius:14px;padding:13px;margin-bottom:8px;transition:all .18s;}
+.appcrd:hover{box-shadow:0 4px 14px rgba(0,0,0,0.06);}
+.app-top{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:7px;margin-bottom:9px;}
+/* INFOBOX */
+.infobox{background:linear-gradient(135deg,rgba(139,92,246,0.07),rgba(14,165,233,0.07));border:1px solid rgba(139,92,246,0.16);border-radius:10px;padding:10px 12px;font-size:.77rem;color:var(--gray);line-height:1.55;margin-bottom:11px;}
+/* PASSWORD RESET CARDS */
+.pwrcrd{background:#FFFBEB;border:1.5px solid #FDE68A;border-radius:12px;padding:12px;margin-bottom:8px;}
+/* BROADCAST PREVIEW */
+.bcprev{background:var(--gb);border-radius:10px;padding:11px 13px;color:#fff;font-size:.8rem;font-weight:600;margin-bottom:11px;display:none;overflow:hidden;}
+.bcprev.on{display:block;}
+.bcprev-img{width:100%;max-height:100px;object-fit:cover;border-radius:7px;margin-bottom:7px;display:none;}
+/* BROADCAST FULLSCREEN OVERLAY */
+.bc-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);justify-content:center;align-items:center;padding:20px;}
+.bc-overlay.on{display:flex;animation:fup .4s ease;}
+.bc-box{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);border-radius:24px;max-width:480px;width:100%;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.6);animation:up .45s cubic-bezier(.34,1.56,.64,1);position:relative;}
+.bc-img-wrap{position:relative;width:100%;display:none;}
+.bc-img-wrap.show{display:block;}
+.bc-img-wrap img{width:100%;max-height:260px;object-fit:cover;display:block;}
+.bc-img-border{position:absolute;inset:0;border:4px solid transparent;border-radius:0;background:linear-gradient(#1a1a2e,#1a1a2e) padding-box,linear-gradient(135deg,#FF416C,#8B5CF6,#00B4D8,#FF416C) border-box;animation:borderRotate 3s linear infinite;}
+@keyframes borderRotate{0%{background:linear-gradient(#1a1a2e,#1a1a2e) padding-box,linear-gradient(0deg,#FF416C,#8B5CF6,#00B4D8,#FF416C) border-box;}25%{background:linear-gradient(#1a1a2e,#1a1a2e) padding-box,linear-gradient(90deg,#FF416C,#8B5CF6,#00B4D8,#FF416C) border-box;}50%{background:linear-gradient(#1a1a2e,#1a1a2e) padding-box,linear-gradient(180deg,#FF416C,#8B5CF6,#00B4D8,#FF416C) border-box;}75%{background:linear-gradient(#1a1a2e,#1a1a2e) padding-box,linear-gradient(270deg,#FF416C,#8B5CF6,#00B4D8,#FF416C) border-box;}100%{background:linear-gradient(#1a1a2e,#1a1a2e) padding-box,linear-gradient(360deg,#FF416C,#8B5CF6,#00B4D8,#FF416C) border-box;}}
+.bc-body{padding:22px 22px 16px;}
+.bc-icon{font-size:2.4rem;margin-bottom:8px;animation:bounce 1s ease infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.bc-title{font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:8px;}
+.bc-msg{font-size:.88rem;color:rgba(255,255,255,0.88);line-height:1.6;margin-bottom:18px;}
+.bc-close{width:100%;padding:13px;border:none;border-radius:12px;background:var(--gm);color:#fff;font-family:'Poppins',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;box-shadow:0 5px 18px rgba(255,65,108,0.4);transition:all .2s;letter-spacing:.5px;}
+.bc-close:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,65,108,0.6);}
+.bc-shine{position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent);animation:shine 3s ease infinite;}
+@keyframes shine{0%{left:-100%;}100%{left:200%;}}
+/* COLOR OPTIONS */
+.copts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+.copt{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .18s;}
+.copt:hover{transform:scale(1.15);}
+.copt.sel{border-color:var(--dark);transform:scale(1.08);}
+/* MODAL */
+.movl{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:8000;justify-content:center;align-items:center;padding:16px;backdrop-filter:blur(4px);}
+.movl.on{display:flex;}
+.mcard{background:#fff;border-radius:20px;padding:20px;max-width:500px;width:100%;box-shadow:0 22px 55px rgba(0,0,0,0.28);animation:up .3s ease;max-height:92vh;overflow-y:auto;}
+.mtitle{font-size:.92rem;font-weight:700;color:var(--dark);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
+.mclose{background:none;border:none;cursor:pointer;color:var(--gray);font-size:1.1rem;padding:2px;}
+/* DIALOG */
+.dlg{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.62);z-index:99999;justify-content:center;align-items:center;padding:16px;backdrop-filter:blur(5px);}
+.dlg.on{display:flex;}
+.dlgcard{background:#fff;border-radius:20px;padding:21px 18px;max-width:330px;width:100%;box-shadow:0 22px 50px rgba(0,0,0,0.3);animation:up .3s ease;}
+.dlgico{font-size:1.9rem;margin-bottom:6px;}
+.dlgttl{font-size:.9rem;font-weight:700;color:var(--dark);margin-bottom:5px;}
+.dlgtxt{font-size:.78rem;color:var(--gray);margin-bottom:14px;line-height:1.5;white-space:pre-line;}
+.dlginp{width:100%;padding:10px 12px;border:1.5px solid var(--bdr);border-radius:9px;font-family:'Poppins',sans-serif;font-size:.84rem;outline:none;margin-bottom:12px;background:var(--lt);color:var(--dark);}
+.dlginp:focus{border-color:var(--v1);}
+.dlgbtns{display:flex;gap:7px;}
+.dok{flex:1;padding:10px;border:none;border-radius:10px;background:var(--gm);color:#fff;font-family:'Poppins',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;}
+.dcn{flex:1;padding:10px;border:1.5px solid var(--bdr);border-radius:10px;background:#fff;color:var(--gray);font-family:'Poppins',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;}
+/* TOAST */
+.toast-el{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:10px 18px;border-radius:12px;font-size:.76rem;font-weight:600;display:none;z-index:9999;box-shadow:0 7px 22px rgba(0,0,0,0.28);white-space:nowrap;}
+.toast-el.on{display:block;animation:fup .3s ease;}
+/* ACTIVITY FEED */
+.afeed{max-height:260px;overflow-y:auto;}
+.aitem{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid var(--bdr);}
+.aitem:last-child{border-bottom:none;}
+.aico2{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;background:linear-gradient(135deg,rgba(139,92,246,0.1),rgba(255,65,108,0.1));}
+.atxt{font-size:.76rem;color:var(--dark);font-weight:500;}
+.atme{font-size:.63rem;color:var(--gray);margin-top:1px;}
+.empty{text-align:center;padding:30px 16px;}
+.eico{font-size:2.2rem;margin-bottom:7px;opacity:.35;}
+.etxt{font-size:.8rem;color:var(--gray);font-weight:500;}
+.divider{height:1px;background:var(--bdr);margin:13px 0;}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;flex-wrap:wrap;gap:7px;}
+.sec-ttl{font-size:.9rem;font-weight:700;color:var(--dark);}
+.sec-sub{font-size:.7rem;color:var(--gray);}
+.badge-cnt{padding:2px 9px;background:var(--gm);color:#fff;border-radius:50px;font-size:.65rem;font-weight:700;}
+@media(max-width:640px){.stats{grid-template-columns:repeat(3,1fr);}.fgrid{grid-template-columns:1fr;}.fg3{grid-template-columns:1fr 1fr;}}
+@media(max-width:400px){.stats{grid-template-columns:repeat(2,1fr);}.tbadge{display:none;}}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="toast-el" id="toastEl"></div>
+
+<!-- LOGIN -->
+<div class="lscr on" id="lscr">
+  <div class="lcard">
+    <div class="ltop">
+      <div style="font-size:3rem;margin-bottom:7px;">⚙️</div>
+      <div style="font-size:1.7rem;font-weight:800;color:#fff;letter-spacing:-0.5px;">Admin Panel</div>
+      <div style="font-size:.78rem;color:rgba(255,255,255,0.8);margin-top:3px;">RDX OSINT Control Center</div>
+    </div>
+    <div class="lbody">
+      <div class="ig"><span class="iico">🔐</span><input type="password" class="inp" id="apass" placeholder="Enter admin password"><button class="eyebtn" onclick="togEye('apass',this)">👁</button></div>
+      <button class="bgrd" onclick="doALogin()">🔓 LOGIN TO PANEL</button>
+      <div class="msg merr" id="lErr"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin" id="adminEl">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:9px;">
+      <div class="tlogo">⚙️ RDX Admin</div>
+      <div class="tbadge">CONTROL CENTER</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:9px;">
+      <div class="fblive"><span class="fbdot"></span>Firebase Live</div>
+      <button class="tbtn tb-out" onclick="doLogout()">🚪 Logout</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="scard sc-pk"><div class="snum" id="stUsers">0</div><div class="slbl">Total Users</div><div class="sico">👥</div></div>
+    <div class="scard sc-bl"><div class="snum" id="stSvcs">0</div><div class="slbl">Services</div><div class="sico">📡</div></div>
+    <div class="scard sc-gn"><div class="snum" id="stActv">0</div><div class="slbl">Active</div><div class="sico">🟢</div></div>
+    <div class="scard sc-or"><div class="snum" id="stPend">0</div><div class="slbl">Pending</div><div class="sico">⏳</div></div>
+    <div class="scard sc-rd"><div class="snum" id="stBan">0</div><div class="slbl">Banned</div><div class="sico">🚫</div></div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabnav">
+    <button class="tabbt act" onclick="swTab('approvals',this)">✅ Approvals <span class="badge-cnt" id="appBadge">0</span></button>
+    <button class="tabbt" onclick="swTab('users',this)">👥 Users</button>
+    <button class="tabbt" onclick="swTab('services',this)">📡 Services</button>
+    <button class="tabbt" onclick="swTab('pwreset',this)">🔑 PW Requests <span class="badge-cnt" id="pwBadge">0</span></button>
+    <button class="tabbt" onclick="swTab('broadcast',this)">📢 Broadcast</button>
+    <button class="tabbt" onclick="swTab('update',this)">🔔 Update</button>
+    <button class="tabbt" onclick="swTab('settings',this)">⚙️ Settings</button>
+    <button class="tabbt" onclick="swTab('customize',this)">🎨 Customize</button>
+    <button class="tabbt" onclick="swTab('activity',this)">📊 Activity</button>
+  </div>
+
+  <!-- ====== APPROVALS ====== -->
+  <div class="tabcnt on" id="tab-approvals">
+    <div class="sec-hdr">
+      <div><div class="sec-ttl">✅ Registration Approvals</div><div class="sec-sub">New users waiting for access</div></div>
+      <button class="bsm bbl" onclick="loadApprovals()">🔄 Refresh</button>
+    </div>
+    <div class="wc">
+      <div id="appList"><div class="empty"><div class="eico">✅</div><div class="etxt">Loading approvals...</div></div></div>
+    </div>
+  </div>
+
+  <!-- ====== USERS ====== -->
+  <div class="tabcnt" id="tab-users">
+    <div class="sec-hdr">
+      <div><div class="sec-ttl">👥 User Management</div></div>
+      <div class="bgrp"><button class="bsm bbl" onclick="loadUsers()">🔄 Refresh</button><button class="bsm bgn" onclick="exportCSV()">📥 CSV</button></div>
+    </div>
+    <div class="wc" style="padding:12px;">
+      <div class="sch"><span class="sico2">🔍</span><input type="text" class="sinp" id="usearch" placeholder="Search name, email, phone, UID..." oninput="filterUsers()"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-size:.72rem;font-weight:700;color:var(--gray);" id="ucnt">Loading...</div>
+        <select class="finp" id="ufilter" onchange="filterUsers()" style="padding:5px 9px;font-size:.72rem;width:auto;">
+          <option value="all">All Users</option><option value="approved">Approved</option>
+          <option value="pending">Pending</option><option value="banned">Banned</option><option value="rejected">Rejected</option>
+        </select>
+      </div>
+      <div id="ulist"></div>
+    </div>
+  </div>
+
+  <!-- ====== SERVICES ====== -->
+  <div class="tabcnt" id="tab-services">
+    <div class="sec-hdr">
+      <div><div class="sec-ttl">📡 Services</div><div class="sec-sub">GET, POST, Bearer, API Key, Form</div></div>
+      <button class="bsm bp" onclick="openAddSvc()">➕ Add Service</button>
+    </div>
+    <div class="wc">
+      <div class="infobox">💡 <b>Full API Support:</b> GET (URL param), POST (JSON/Form-encoded), Bearer Token, API Key Header, Basic Auth, Custom Headers, Response key mapping. Test before saving!</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;">
+        <div class="sec-ttl" style="font-size:.84rem;">Services (<span id="scnt">0</span>)</div>
+      </div>
+      <div id="slist"></div>
+    </div>
+  </div>
+
+  <!-- ====== PASSWORD RESET REQUESTS ====== -->
+  <div class="tabcnt" id="tab-pwreset">
+    <div class="sec-hdr">
+      <div><div class="sec-ttl">🔑 Password Reset Requests</div><div class="sec-sub">Users requesting password change</div></div>
+      <button class="bsm bbl" onclick="loadPwRequests()">🔄 Refresh</button>
+    </div>
+    <div class="wc">
+      <div class="infobox">ℹ️ User ne password reset request bheja hai. Yahan se unka naya password set karein — user ko login screen par dikh jayega.</div>
+      <div id="pwList"><div class="empty"><div class="eico">🔑</div><div class="etxt">No requests yet.</div></div></div>
+    </div>
+  </div>
+
+  <!-- ====== BROADCAST ====== -->
+  <div class="tabcnt" id="tab-broadcast">
+    <div class="sec-hdr"><div><div class="sec-ttl">📢 Broadcast</div><div class="sec-sub">Scrolling marquee banner for all users</div></div></div>
+    <div class="wc">
+      <div class="infobox">📢 Yeh banner auto-scroll (marquee) hota hai user app ke top par. Image URL bhi laga sakte hain side mein.</div>
+      <div class="frow"><label class="flbl">Message Text *</label><textarea class="finp" id="bcMsg" placeholder="Enter announcement message..." oninput="updBcPrev()"></textarea></div>
+      <div class="frow"><label class="flbl">Side Image URL (optional)</label><input type="url" class="finp" id="bcImgUrl" placeholder="https://example.com/banner.jpg" oninput="updBcPrev()"></div>
+      <div id="bcPrev" class="bcprev">
+        <img id="bcPrevImg" class="bcprev-img" src="" alt="">
+        <span id="bcPrevTxt"></span>
+      </div>
+      <div class="bgrp">
+        <button class="bsm bp" style="flex:1;" onclick="sendBC()">📢 Send Now</button>
+        <button class="bsm bpur" style="flex:1;" onclick="previewBCFull()">👁 Preview</button>
+        <button class="bsm bgr" style="flex:1;" onclick="clearBC()">🗑️ Clear</button>
+      </div>
+    </div>
+    <div class="wc">
+      <div class="wc-title">📋 Active Broadcast</div>
+      <div id="curBC" style="font-size:.82rem;color:var(--gray);padding:9px;background:var(--lt);border-radius:9px;min-height:36px;">Loading...</div>
+    </div>
+  </div>
+
+  <!-- ====== UPDATE NOTIFICATION ====== -->
+  <div class="tabcnt" id="tab-update">
+    <div class="sec-hdr"><div><div class="sec-ttl">🔔 Update Notification</div><div class="sec-sub">Full screen popup with animation</div></div></div>
+    <div class="wc">
+      <div class="infobox">🔔 Yeh FULL SCREEN popup user ke screen par show hoga animation ke sath. Image, icon, timer sab set kar sakte hain. Confetti animation bhi ho sakti hai!</div>
+      <div class="fgrid">
+        <div class="frow"><label class="flbl">Popup Title</label><input type="text" class="finp" id="updTitle" placeholder="e.g. New Update!" value="New Update!"></div>
+        <div class="frow"><label class="flbl">Icon (emoji)</label><input type="text" class="finp" id="updIcon" placeholder="🔔" value="🔔" maxlength="8"></div>
+      </div>
+      <div class="frow"><label class="flbl">Message *</label><textarea class="finp" id="updMsg" placeholder="Update message for users...">Naye features aa gaye hain! Check karo.</textarea></div>
+      <div class="frow"><label class="flbl">Image URL (optional - shown at top of popup)</label><input type="url" class="finp" id="updImg" placeholder="https://example.com/update.jpg"></div>
+      <div class="frow"><label class="flbl">OK Button Text</label><input type="text" class="finp" id="updBtn" placeholder="👍 Got It!" value="👍 Got It!"></div>
+      <div class="fgrid">
+        <div class="frow"><label class="flbl">Auto-close Timer (seconds, 0=off)</label><input type="number" class="finp" id="updTimer" placeholder="0" value="0" min="0" max="300"></div>
+        <div class="frow"><label class="flbl">Confetti Animation</label>
+          <select class="finp" id="updConf"><option value="false">❌ No</option><option value="true">🎊 Yes!</option></select></div>
+      </div>
+      <div class="bgrp">
+        <button class="bsm bp bfull" onclick="sendUpd()">🔔 Send to All Users</button>
+        <button class="bsm bgr bfull" style="margin-top:7px;" onclick="clearUpd()">🗑️ Clear Notification</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SETTINGS ====== -->
+  <div class="tabcnt" id="tab-settings">
+    <div class="sec-hdr"><div class="sec-ttl">⚙️ App Settings</div></div>
+    <div class="wc">
+      <div class="trow">
+        <div class="tinfo"><div class="ttitle">🔧 Maintenance Mode</div><div class="tdesc">Block all users with maintenance screen</div></div>
+        <label class="sw"><input type="checkbox" id="maintT" onchange="toggleMaint()"><span class="sl"></span></label>
+      </div>
+      <div class="frow" style="margin-top:11px;"><label class="flbl">Maintenance Message</label>
+        <textarea class="finp" id="maintMsg">We're upgrading our systems. Please check back soon!</textarea></div>
+      <div class="trow">
+        <div class="tinfo"><div class="ttitle">🚫 Hide API Branding</div><div class="tdesc">Remove all API owner credits from results</div></div>
+        <label class="sw"><input type="checkbox" id="brandT"><span class="sl"></span></label>
+      </div>
+      <div class="trow">
+        <div class="tinfo"><div class="ttitle">📝 Allow Registration</div><div class="tdesc">Allow new users to register</div></div>
+        <label class="sw"><input type="checkbox" id="regT" checked><span class="sl"></span></label>
+      </div>
+      <div class="trow">
+        <div class="tinfo"><div class="ttitle">📜 Scan History for Users</div><div class="tdesc">Users can see their scan history</div></div>
+        <label class="sw"><input type="checkbox" id="histT"><span class="sl"></span></label>
+      </div>
+      <button class="bsm bp bfull" style="margin-top:13px;" onclick="saveSettings()">💾 Save All Settings</button>
+    </div>
+    <div class="wc">
+      <div class="wc-title">🔐 Change Admin Password</div>
+      <div class="frow"><label class="flbl">Current Password</label><div class="ig"><span class="iico">🔒</span><input type="password" class="finp" id="curPw" placeholder="Current password" style="padding-left:35px;"></div></div>
+      <div class="frow"><label class="flbl">New Password</label><div class="ig"><span class="iico">🔒</span><input type="password" class="finp" id="newPw" placeholder="New password (min 4)" style="padding-left:35px;"></div></div>
+      <div class="frow"><label class="flbl">Confirm New Password</label><div class="ig"><span class="iico">🔒</span><input type="password" class="finp" id="cfPw" placeholder="Confirm new password" style="padding-left:35px;"></div></div>
+      <button class="bsm bor bfull" onclick="chgPass()">🔐 Change Password</button>
+      <div class="msg merr" id="passE"></div><div class="msg mok" id="passO"></div>
+    </div>
+  </div>
+
+  <!-- ====== CUSTOMIZE ====== -->
+  <div class="tabcnt" id="tab-customize">
+    <div class="sec-hdr"><div><div class="sec-ttl">🎨 App Customization</div><div class="sec-sub">Changes apply live for all users</div></div></div>
+    <div class="wc">
+      <div class="wc-title">📱 App Identity</div>
+      <div class="fgrid">
+        <div class="frow"><label class="flbl">App Name</label><input type="text" class="finp" id="cAppNm" value="RDX OSINT APP"></div>
+        <div class="frow"><label class="flbl">App Subtitle</label><input type="text" class="finp" id="cSub" value="Professional Intelligence Tool"></div>
+      </div>
+      <div class="fgrid">
+        <div class="frow"><label class="flbl">Telegram Link</label><input type="url" class="finp" id="cTg" value="https://t.me/RDXBIO87"></div>
+        <div class="frow"><label class="flbl">Footer Text</label><input type="text" class="finp" id="cFoot" value="⚡ Powered by RDX OSINT"></div>
+      </div>
+      <div class="fgrid">
+        <div class="frow"><label class="flbl">Login Welcome Message</label><input type="text" class="finp" id="cWelc" value="Welcome back to RDX OSINT"></div>
+        <div class="frow"><label class="flbl">Login Icon (emoji)</label><input type="text" class="finp" id="cIco" value="🕵️" maxlength="8" style="font-size:1.4rem;"></div>
+      </div>
+    </div>
+    <div class="wc">
+      <div class="wc-title">🎨 Theme Color</div>
+      <div class="infobox">💡 Theme color change karne ke baad "Save" dabao — user panel ko refresh karne par naya color apply hoga.</div>
+      <div class="copts">
+        <div class="copt" style="background:linear-gradient(135deg,#FF416C,#8B5CF6);" onclick="pickC(this,'#FF416C','#8B5CF6')" title="Pink Purple"></div>
+        <div class="copt" style="background:linear-gradient(135deg,#00B4D8,#0077B6);" onclick="pickC(this,'#00B4D8','#0077B6')" title="Ocean Blue"></div>
+        <div class="copt" style="background:linear-gradient(135deg,#10B981,#059669);" onclick="pickC(this,'#10B981','#059669')" title="Emerald"></div>
+        <div class="copt" style="background:linear-gradient(135deg,#F59E0B,#EF4444);" onclick="pickC(this,'#F59E0B','#EF4444')" title="Sunset"></div>
+        <div class="copt" style="background:linear-gradient(135deg,#6366F1,#8B5CF6);" onclick="pickC(this,'#6366F1','#8B5CF6')" title="Indigo"></div>
+        <div class="copt" style="background:linear-gradient(135deg,#EC4899,#A855F7);" onclick="pickC(this,'#EC4899','#A855F7')" title="Rose Violet"></div>
+        <div class="copt" style="background:linear-gradient(135deg,#0EA5E9,#6366F1);" onclick="pickC(this,'#0EA5E9','#6366F1')" title="Sky Indigo"></div>
+        <div class="copt" style="background:linear-gradient(135deg,#F97316,#EF4444);" onclick="pickC(this,'#F97316','#EF4444')" title="Fire"></div>
+        <div class="copt" style="background:linear-gradient(135deg,#14B8A6,#0EA5E9);" onclick="pickC(this,'#14B8A6','#0EA5E9')" title="Teal Cyan"></div>
+        <div class="copt" style="background:linear-gradient(135deg,#A78BFA,#EC4899);" onclick="pickC(this,'#A78BFA','#EC4899')" title="Lilac Pink"></div>
+        <div class="copt sel" style="background:linear-gradient(135deg,#FF416C,#8B5CF6);" onclick="pickC(this,'#FF416C','#8B5CF6')" title="Pink Purple"></div>
+        <div class="copt" style="background:linear-gradient(135deg,#FFD700,#FF8C00);" onclick="pickC(this,'#FFD700','#FF8C00')" title="Gold Orange"></div>
+        <div class="copt" style="background:linear-gradient(135deg,#00FF87,#00B4D8);" onclick="pickC(this,'#00FF87','#00B4D8')" title="Neon Green"></div>
+        <div class="copt" style="background:linear-gradient(135deg,#FF0080,#FF6B35);" onclick="pickC(this,'#FF0080','#FF6B35')" title="Hot Coral"></div>
+        <div class="copt" style="background:linear-gradient(135deg,#667EEA,#764BA2);" onclick="pickC(this,'#667EEA','#764BA2')" title="Purple Dream"></div>
+        <div class="copt" style="background:linear-gradient(135deg,#11998E,#38EF7D);" onclick="pickC(this,'#11998E','#38EF7D')" title="Matrix Green"></div>
+        <div class="copt" style="background:linear-gradient(135deg,#FC466B,#3F5EFB);" onclick="pickC(this,'#FC466B','#3F5EFB')" title="Cyber"></div>
+        <div class="copt" style="background:linear-gradient(135deg,#1FA2FF,#12D8FA,#A6FFCB);" onclick="pickC(this,'#1FA2FF','#A6FFCB')" title="Aurora"></div>
+        <div class="copt" style="background:linear-gradient(135deg,#FF6B6B,#FFA500);" onclick="pickC(this,'#FF6B6B','#FFA500')" title="Flame"></div>
+      </div>
+      <div style="margin-top:11px;font-size:.75rem;color:var(--gray);">Selected: <span id="selColorTxt" style="font-weight:700;color:var(--v1);">Pink Purple</span></div>
+    </div>
+    <button class="bsm bp bfull" style="margin-bottom:14px;" onclick="saveCustom()">💾 Save & Apply Customization</button>
+  </div>
+
+  <!-- ====== ACTIVITY ====== -->
+  <div class="tabcnt" id="tab-activity">
+    <div class="sec-hdr">
+      <div><div class="sec-ttl">📊 Activity Log</div></div>
+      <button class="bsm bgr" onclick="actLog=[];renderActivity();">🗑️ Clear</button>
+    </div>
+    <div class="wc">
+      <div class="afeed" id="aFeed"><div class="empty"><div class="eico">📊</div><div class="etxt">No activities yet.</div></div></div>
+    </div>
+  </div>
+
+</div><!-- end admin -->
+
+<!-- ADD/EDIT SERVICE MODAL -->
+<div class="movl" id="svcModal">
+  <div class="mcard">
+    <div class="mtitle"><span id="svcModalTitle">➕ Add Service</span><button class="mclose" onclick="closeSvcModal()">✕</button></div>
+    <input type="hidden" id="editSvcId">
+    <div class="frow"><label class="flbl">Service Name *</label><input type="text" class="finp" id="svNm" placeholder="e.g., Phone Lookup, Email Check"></div>
+    <div class="frow"><label class="flbl">Input Label (shown to user)</label><input type="text" class="finp" id="svLbl" placeholder="e.g., Enter Phone Number"></div>
+    <div class="frow"><label class="flbl">Input Placeholder</label><input type="text" class="finp" id="svPh" placeholder="e.g., 10-digit mobile number"></div>
+    <div class="fgrid">
+      <div class="frow"><label class="flbl">Input Type</label>
+        <select class="finp" id="svInpT"><option value="text">Text</option><option value="email">Email</option><option value="tel">Phone</option><option value="number">Number</option><option value="url">URL</option></select></div>
+      <div class="frow"><label class="flbl">HTTP Method</label>
+        <select class="finp" id="svMeth" onchange="updSvcForm()"><option value="GET">GET</option><option value="POST">POST</option></select></div>
+    </div>
+    <div class="frow"><label class="flbl">API URL *</label><input type="url" class="finp" id="svApi" placeholder="https://api.example.com/endpoint/"></div>
+    <!-- GET -->
+    <div id="getSection">
+      <div class="frow"><label class="flbl">URL Param Key</label><input type="text" class="finp" id="svParamKey" placeholder="phone, query, number (empty = append directly)">
+        <div class="fhint">💡 GET: URL becomes <code>...?phone=USER_INPUT</code> or <code>...USER_INPUT</code> if empty</div></div>
+    </div>
+    <!-- POST -->
+    <div id="postSection" style="display:none;">
+      <div class="frow"><label class="flbl">Body Type</label><select class="finp" id="svBodyT"><option value="json">JSON body</option><option value="form">Form URL-encoded</option></select></div>
+      <div class="frow"><label class="flbl">Body Param Key *</label><input type="text" class="finp" id="svBPKey" placeholder="query, number, phone">
+        <div class="fhint">💡 POST body: {"key": USER_INPUT}</div></div>
+      <div class="frow"><label class="flbl">Extra Body Params (JSON)</label><textarea class="finp" id="svExtra" placeholder='{"api_key":"abc123","format":"json"}' style="height:60px;"></textarea></div>
+    </div>
+    <div class="divider"></div>
+    <div class="frow"><label class="flbl">Authentication Type</label>
+      <select class="finp" id="svAuthT" onchange="updAuthForm()"><option value="none">None</option><option value="bearer">Bearer Token</option><option value="apikey">API Key Header</option><option value="basic">Basic Auth (user:pass)</option></select></div>
+    <div id="authSection" style="display:none;">
+      <div id="apikeyRow" style="display:none;" class="frow"><label class="flbl">API Key Header Name</label><input type="text" class="finp" id="svAKH" placeholder="e.g., X-API-Key, Authorization"></div>
+      <div class="frow"><label class="flbl">Token / Key Value</label><input type="text" class="finp" id="svTok" placeholder="Your auth token or key"></div>
+    </div>
+    <div class="frow"><label class="flbl">Custom Headers (JSON, optional)</label><textarea class="finp" id="svHdrs" placeholder='{"X-Custom-Header":"value"}' style="height:55px;"></textarea></div>
+    <div class="divider"></div>
+    <div class="frow"><label class="flbl">Response Key (optional)</label><input type="text" class="finp" id="svResKey" placeholder="data, result, response (leave empty for root)">
+      <div class="fhint">💡 If API returns {result:{name:...}}, enter 'result'</div></div>
+    <div class="frow">
+      <label class="flbl">🧪 Test API</label>
+      <div style="display:flex;gap:7px;">
+        <input type="text" class="finp" id="svTestVal" placeholder="Enter test value" style="flex:1;">
+        <button class="bsm bcy" onclick="testApi()">Test ▶</button>
+      </div>
+    </div>
+    <div id="testRes" style="display:none;" class="infobox" style="font-family:monospace;font-size:.72rem;"></div>
+    <div class="bgrp" style="margin-top:13px;">
+      <button class="bsm bp" style="flex:1;" onclick="saveSvc()">💾 Save</button>
+      <button class="bsm bgr" style="flex:1;" onclick="closeSvcModal()">✕ Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESET PASSWORD MODAL -->
+<div class="movl" id="pwModal">
+  <div class="mcard" style="max-width:380px;">
+    <div class="mtitle"><span>🔐 Reset User Password</span><button class="mclose" onclick="document.getElementById('pwModal').classList.remove('on')">✕</button></div>
+    <div id="pwModalInfo" style="font-size:.8rem;color:var(--gray);margin-bottom:12px;padding:9px;background:var(--lt);border-radius:9px;"></div>
+    <div class="frow"><label class="flbl">New Password for User</label><input type="text" class="finp" id="pwNewVal" placeholder="Enter new password (min 4 chars)"></div>
+    <div class="bgrp">
+      <button class="bsm bp" style="flex:1;" onclick="doResetPw()">🔐 Set Password</button>
+      <button class="bsm bgr" style="flex:1;" onclick="document.getElementById('pwModal').classList.remove('on')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- BROADCAST FULLSCREEN OVERLAY -->
+<div class="bc-overlay" id="bcOverlay">
+  <div class="bc-box">
+    <div class="bc-shine"></div>
+    <div class="bc-img-wrap" id="bcOvImgWrap">
+      <img id="bcOvImg" src="" alt="broadcast">
+      <div class="bc-img-border"></div>
+    </div>
+    <div class="bc-body" style="text-align:center;">
+      <div class="bc-icon">📢</div>
+      <div class="bc-title">📣 Announcement</div>
+      <div class="bc-msg" id="bcOvMsg"></div>
+      <button class="bc-close" onclick="document.getElementById('bcOverlay').classList.remove('on')">✕ Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- DIALOG -->
+<div class="dlg" id="dlgEl">
+  <div class="dlgcard">
+    <div class="dlgico" id="dlgIco">ℹ️</div>
+    <div class="dlgttl" id="dlgTtl">Message</div>
+    <div class="dlgtxt" id="dlgTxt"></div>
+    <input type="text" class="dlginp" id="dlgInp" style="display:none;">
+    <div class="dlgbtns" id="dlgBtns"></div>
+  </div>
+</div>
+
+<script>
+// ── DIALOG ──
+function dlg(t,tx,type,ico,def){type=type||'alert';ico=ico||'ℹ️';def=def||'';
+  return new Promise(res=>{
+    const ov=document.getElementById('dlgEl');
+    document.getElementById('dlgIco').textContent=ico;document.getElementById('dlgTtl').textContent=t;document.getElementById('dlgTxt').textContent=tx;
+    const inp=document.getElementById('dlgInp'),btns=document.getElementById('dlgBtns');btns.innerHTML='';
+    if(type==='prompt'){inp.style.display='block';inp.value=def;setTimeout(()=>inp.focus(),80);}else inp.style.display='none';
+    const cl=v=>{ov.classList.remove('on');res(v);};
+    if(type==='confirm'){const ok=document.createElement('button');ok.className='dok';ok.textContent='Yes';ok.onclick=()=>cl(true);const ca=document.createElement('button');ca.className='dcn';ca.textContent='No';ca.onclick=()=>cl(false);btns.appendChild(ca);btns.appendChild(ok);}
+    else if(type==='prompt'){const ok=document.createElement('button');ok.className='dok';ok.textContent='OK';ok.onclick=()=>cl(inp.value);const ca=document.createElement('button');ca.className='dcn';ca.textContent='Cancel';ca.onclick=()=>cl(null);btns.appendChild(ca);btns.appendChild(ok);}
+    else{const ok=document.createElement('button');ok.className='dok';ok.textContent='OK';ok.onclick=()=>cl(true);btns.appendChild(ok);}
+    ov.classList.add('on');
+  });
+}
+window.alert=m=>dlg('Alert',m,'alert','⚠️');
+window.confirm=m=>dlg('Confirm',m,'confirm','❓');
+window.prompt=(m,d)=>dlg('Input',m,'prompt','✏️',d||'');
+
+// ── FIREBASE ──
+const FB='https://osint-6eec9-default-rtdb.firebaseio.com';
+const FBQ=p=>`${FB}/${p}.json`;
+async function dbGet(p){try{const r=await fetch(FBQ(p));return await r.json();}catch{return null;}}
+async function dbSet(p,d){try{await fetch(FBQ(p),{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});}catch{}}
+async function dbPatch(p,d){try{await fetch(FBQ(p),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});}catch{}}
+async function dbDel(p){try{await fetch(FBQ(p),{method:'DELETE'});}catch{}}
+
+// ── STATE ──
+let AP=localStorage.getItem('rdx_ap')||'8090';
+let svcs=[],allU={},actLog=[],selC1='#FF416C',selC2='#8B5CF6',curPwReqId=null,curPwUid=null;
+
+// ── UTILS ──
+function togEye(id,btn){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password';btn.textContent=i.type==='password'?'👁':'🙈';}
+function showMsg(id,txt,type){type=type||'err';const el=document.getElementById(id);if(!el)return;el.textContent=(type==='err'?'❌ ':'✅ ')+txt;el.className='msg '+(type==='err'?'merr':'mok')+' on';if(type==='err')setTimeout(()=>el.classList.remove('on'),4000);}
+function toast(msg,em){em=em||'✅';const t=document.getElementById('toastEl');t.textContent=em+' '+msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2400);}
+function logAct(msg,type){type=type||'action';actLog.unshift({msg,type,time:new Date().toLocaleString()});if(actLog.length>60)actLog.pop();renderActivity();}
+function updStats(){
+  const keys=Object.keys(allU);
+  const banned=keys.filter(k=>allU[k]&&allU[k].banned).length;
+  const active=keys.filter(k=>allU[k]&&!allU[k].banned&&allU[k].status==='approved').length;
+  const pend=keys.filter(k=>allU[k]&&allU[k].status==='pending').length;
+  document.getElementById('stUsers').textContent=keys.length;
+  document.getElementById('stActv').textContent=active;
+  document.getElementById('stPend').textContent=pend;
+  document.getElementById('stBan').textContent=banned;
+  document.getElementById('stSvcs').textContent=svcs.length;
+}
+
+// ── LOGIN ──
+function doALogin(){
+  const p=document.getElementById('apass').value;
+  if(p===AP){document.getElementById('lscr').classList.remove('on');document.getElementById('adminEl').classList.add('on');initAdmin();}
+  else{showMsg('lErr','Wrong password!');document.getElementById('apass').value='';}
+}
+function doLogout(){document.getElementById('adminEl').classList.remove('on');document.getElementById('lscr').classList.add('on');document.getElementById('apass').value='';}
+document.getElementById('apass').addEventListener('keypress',e=>{if(e.key==='Enter')doALogin();});
+
+// ── TABS ──
+function swTab(name,btn){
+  document.querySelectorAll('.tabbt').forEach(b=>b.classList.remove('act'));
+  document.querySelectorAll('.tabcnt').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('act');document.getElementById('tab-'+name).classList.add('on');
+  if(name==='approvals')loadApprovals();
+  if(name==='users')loadUsers();
+  if(name==='services')renderSvcs();
+  if(name==='pwreset')loadPwRequests();
+  if(name==='broadcast')loadCurBC();
+}
+
+// ── INIT ──
+async function initAdmin(){
+  await loadSvcs();await loadUsers();loadApprovals();loadSettings();loadCustom();
+}
+
+// ── SERVICES ──
+async function loadSvcs(){
+  const d=await dbGet('services');
+  svcs=d?(Array.isArray(d)?d:Object.values(d).filter(Boolean)):[];
+  renderSvcs();updStats();
+}
+async function saveSvcs(){await dbSet('services',svcs);}
+
+function renderSvcs(){
+  const list=document.getElementById('slist');
+  document.getElementById('scnt').textContent=svcs.length;
+  if(!svcs.length){list.innerHTML='<div class="empty"><div class="eico">📡</div><div class="etxt">No services yet. Add one!</div></div>';return;}
+  list.innerHTML='';
+  svcs.forEach(s=>{
+    const meth=(s.method||'GET').toUpperCase();
+    const auth=s.authType&&s.authType!=='none';
+    const d=document.createElement('div');d.className='scrd';
+    d.innerHTML=`<div class="sleft"><div class="snm">${s.name}</div><div class="surl">${s.api||''}</div>
+      <div class="smeta"><span class="stag ${meth==='POST'?'stag-post':''}">${meth}</span>${auth?`<span class="stag stag-auth">🔐 ${s.authType}</span>`:''}</div></div>
+      <div style="display:flex;gap:5px;flex-shrink:0;">
+        <button class="bsm bcy" onclick="openEditSvc('${s.id}')" title="Edit">✏️</button>
+        <button class="bsm brd" onclick="delSvc('${s.id}')" title="Delete">🗑️</button>
+      </div>`;
+    list.appendChild(d);
+  });
+}
+
+function openAddSvc(){
+  document.getElementById('svcModalTitle').textContent='➕ Add Service';
+  document.getElementById('editSvcId').value='';
+  ['svNm','svLbl','svPh','svApi','svParamKey','svBPKey','svExtra','svTok','svAKH','svHdrs','svResKey','svTestVal'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('svInpT').value='text';document.getElementById('svMeth').value='GET';
+  document.getElementById('svBodyT').value='json';document.getElementById('svAuthT').value='none';
+  document.getElementById('testRes').style.display='none';
+  updSvcForm();updAuthForm();document.getElementById('svcModal').classList.add('on');
+}
+function openEditSvc(id){
+  const s=svcs.find(x=>x.id===id);if(!s)return;
+  document.getElementById('svcModalTitle').textContent='✏️ Edit Service';
+  document.getElementById('editSvcId').value=id;
+  document.getElementById('svNm').value=s.name||'';document.getElementById('svLbl').value=s.inputLabel||'';
+  document.getElementById('svPh').value=s.placeholder||'';document.getElementById('svApi').value=s.api||'';
+  document.getElementById('svParamKey').value=s.paramKey||'';document.getElementById('svBPKey').value=s.paramKey||'';
+  document.getElementById('svExtra').value=s.extraParams?(typeof s.extraParams==='string'?s.extraParams:JSON.stringify(s.extraParams)):'';
+  document.getElementById('svTok').value=s.authToken||'';document.getElementById('svAKH').value=s.apiKeyHeader||'';
+  document.getElementById('svHdrs').value=s.headers?(typeof s.headers==='string'?s.headers:JSON.stringify(s.headers)):'';
+  document.getElementById('svResKey').value=s.responseKey||'';
+  document.getElementById('svInpT').value=s.inputType||'text';document.getElementById('svMeth').value=s.method||'GET';
+  document.getElementById('svBodyT').value=s.bodyType||'json';document.getElementById('svAuthT').value=s.authType||'none';
+  document.getElementById('testRes').style.display='none';updSvcForm();updAuthForm();
+  document.getElementById('svcModal').classList.add('on');
+}
+function closeSvcModal(){document.getElementById('svcModal').classList.remove('on');}
+function updSvcForm(){const m=document.getElementById('svMeth').value;document.getElementById('getSection').style.display=m==='GET'?'block':'none';document.getElementById('postSection').style.display=m==='POST'?'block':'none';}
+function updAuthForm(){const a=document.getElementById('svAuthT').value;document.getElementById('authSection').style.display=a!=='none'?'block':'none';document.getElementById('apikeyRow').style.display=a==='apikey'?'block':'none';}
+
+async function saveSvc(){
+  const nm=document.getElementById('svNm').value.trim(),api=document.getElementById('svApi').value.trim();
+  if(!nm||!api)return alert('Service name and API URL are required!');
+  const id=document.getElementById('editSvcId').value;const meth=document.getElementById('svMeth').value;
+  const obj={id:id||'svc_'+Date.now(),name:nm,inputLabel:document.getElementById('svLbl').value.trim(),
+    placeholder:document.getElementById('svPh').value.trim(),api,method:meth,inputType:document.getElementById('svInpT').value,
+    authType:document.getElementById('svAuthT').value,authToken:document.getElementById('svTok').value.trim(),
+    apiKeyHeader:document.getElementById('svAKH').value.trim(),responseKey:document.getElementById('svResKey').value.trim()};
+  const hdr=document.getElementById('svHdrs').value.trim();
+  if(hdr)try{obj.headers=JSON.parse(hdr);}catch{}
+  if(meth==='GET'){obj.paramKey=document.getElementById('svParamKey').value.trim();}
+  else{obj.bodyType=document.getElementById('svBodyT').value;obj.paramKey=document.getElementById('svBPKey').value.trim();
+    const ex=document.getElementById('svExtra').value.trim();if(ex)try{obj.extraParams=JSON.parse(ex);}catch{}}
+  if(id){const i=svcs.findIndex(s=>s.id===id);if(i!==-1)svcs[i]=obj;}else svcs.push(obj);
+  await saveSvcs();renderSvcs();updStats();closeSvcModal();
+  toast(id?'Service updated!':'Service added!');logAct((id?'Updated':'Added')+' service: '+nm);
+}
+async function delSvc(id){
+  if(await confirm('Delete this service permanently?')){
+    const s=svcs.find(x=>x.id===id);svcs=svcs.filter(x=>x.id!==id);await saveSvcs();renderSvcs();updStats();
+    toast('Service deleted!','🗑️');logAct('Deleted service: '+(s&&s.name?s.name:id));
+  }
+}
+
+// TEST API - with CORS proxy fallback
+async function testApi(){
+  const api=document.getElementById('svApi').value.trim(),val=document.getElementById('svTestVal').value.trim();
+  const meth=document.getElementById('svMeth').value;
+  if(!api)return alert('Enter API URL first!');if(!val)return alert('Enter a test value!');
+  const res=document.getElementById('testRes');res.style.display='block';res.textContent='🔄 Testing...';
+  const doFetch=async(useProxy)=>{
+    const hdrs={'Accept':'application/json'};
+    const authT=document.getElementById('svAuthT').value,tok=document.getElementById('svTok').value.trim();
+    const akh=document.getElementById('svAKH').value.trim();
+    if(authT==='bearer'&&tok)hdrs['Authorization']='Bearer '+tok;
+    if(authT==='apikey'&&akh&&tok)hdrs[akh]=tok;
+    if(authT==='basic'&&tok)hdrs['Authorization']='Basic '+btoa(tok);
+    const pk=document.getElementById('svParamKey').value.trim();
+    let url=api,body=undefined;const ctrl=new AbortController();const tid=setTimeout(()=>ctrl.abort(),15000);
+    if(meth==='GET'){url=pk?(url.includes('?')?url+'&':url+'?')+pk+'='+encodeURIComponent(val):url+encodeURIComponent(val);}
+    else{hdrs['Content-Type']='application/json';const k=document.getElementById('svBPKey').value.trim()||'query';body=JSON.stringify({[k]:val});}
+    if(useProxy){url='https://corsproxy.io/?'+encodeURIComponent(url);}
+    const r=await fetch(url,{method:meth,headers:hdrs,body,signal:ctrl.signal});clearTimeout(tid);
+    const ct=r.headers.get('content-type')||'';
+    return ct.includes('json')?await r.json():await r.text();
+  };
+  try{
+    const data=await doFetch(false);
+    res.textContent='✅ Status: OK\n\n'+JSON.stringify(data,null,2).slice(0,800);
+  }catch(e){
+    if(e.name==='AbortError'){res.textContent='❌ Timeout! API did not respond in 15s.';return;}
+    // CORS error - try proxy
+    res.textContent='⚠️ Direct failed (CORS?), trying proxy...\n';
+    try{
+      const data=await doFetch(true);
+      res.textContent='✅ Success via CORS Proxy!\n\n'+JSON.stringify(data,null,2).slice(0,800);
+    }catch(e2){res.textContent='❌ Failed: '+e2.message+'\n\nTip: Check API URL and auth settings.';}
+  }
+}
+
+// ── USERS ──
+async function loadUsers(){
+  document.getElementById('ucnt').textContent='Loading...';
+  const d=await dbGet('users');allU=d||{};
+  filterUsers();updStats();
+}
+function filterUsers(){
+  const q=document.getElementById('usearch').value.toLowerCase();
+  const f=document.getElementById('ufilter').value;
+  let filtered={};
+  Object.keys(allU).forEach(uid=>{
+    const u=allU[uid];if(!u)return;
+    if(f==='approved'&&(u.banned||u.status!=='approved'))return;
+    if(f==='pending'&&u.status!=='pending')return;
+    if(f==='banned'&&!u.banned)return;
+    if(f==='rejected'&&u.status!=='rejected')return;
+    if(q&&!(u.name||'').toLowerCase().includes(q)&&!(u.email||'').toLowerCase().includes(q)&&!(u.phone||'').toLowerCase().includes(q)&&!uid.toLowerCase().includes(q))return;
+    filtered[uid]=u;
+  });
+  renderUsers(filtered);
+}
+function buildSvcChips(uid,u){
+  if(!svcs.length)return '<div style="font-size:.7rem;color:#CBD5E1;">No services.</div>';
+  const hidden=u.hiddenServices||{};
+  return svcs.map(s=>{
+    const on=hidden[s.id]!==true;
+    return `<div class="svcc ${on?'on':''}"><label class="msw"><input type="checkbox" ${on?'checked':''} onchange="togSvc('${uid}','${s.id}',this.checked)"><span class="msl"></span></label>${s.name}</div>`;
+  }).join('');
+}
+function renderUsers(obj){
+  const list=document.getElementById('ulist');
+  const keys=Object.keys(obj);
+  document.getElementById('ucnt').textContent=`👥 ${keys.length} user${keys.length!==1?'s':''}`;
+  if(!keys.length){list.innerHTML='<div class="empty"><div class="eico">👤</div><div class="etxt">No users found.</div></div>';return;}
+  list.innerHTML='';
+  keys.forEach(uid=>{
+    const u=obj[uid];if(!u)return;
+    const status=u.banned?'🚫 Banned':u.status==='approved'?'✅ Active':u.status==='rejected'?'❌ Rejected':'⏳ Pending';
+    const bdgClass=u.banned?'bban':u.status==='approved'?'bact':u.status==='rejected'?'bban':'bpend';
+    const joined=u.createdAt?new Date(u.createdAt).toLocaleDateString():'?';
+    const hasDp=u.dp;
+    const avHTML=hasDp?`<img src="${u.dp}" alt="dp" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`:`${u.avatar||'👤'}`;
+    const c=document.createElement('div');c.className='ucrd';
+    c.innerHTML=`
+      <div class="utop">
+        <div class="uleft">
+          <div class="uav">${avHTML}</div>
+          <div>
+            <div class="unm">${u.name||'N/A'}</div>
+            <div class="uem">📧 ${u.email||'N/A'}</div>
+            ${u.phone?`<div class="uph">📱 ${u.phone}</div>`:''}
+            <div class="upw" onclick="showPw('${uid}')" title="Click to view password">🔑 View Password</div>
+            <div class="uuid">🆔 ${uid.substr(0,26)}...</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;">
+          <span class="bdg ${bdgClass}">${status}</span>
+          <span style="font-size:.63rem;color:var(--gray);">Joined ${joined}</span>
+        </div>
+      </div>
+      <div class="svctw"><div class="svct-lbl">📡 Service Access</div><div class="svcchips">${buildSvcChips(uid,u)}</div></div>
+      <div class="bgrp">
+        ${u.banned?`<button class="bsm bgn" onclick="unban('${uid}')">✅ Unban</button>`:`<button class="bsm bor" onclick="ban('${uid}')">🚫 Ban</button>`}
+        <button class="bsm brd" onclick="delUser('${uid}')">🗑️ Delete</button>
+        <button class="bsm bpur" onclick="openPwModal('${uid}')">🔐 Set PW</button>
+        <button class="bsm bgr" onclick="hideAllSvcs('${uid}')">🙈 Hide All</button>
+        <button class="bsm bgn" onclick="showAllSvcs('${uid}')">👁 Show All</button>
+        <button class="bsm bcy" onclick="resetUserSvcs('${uid}')">🔄 Reset</button>
+      </div>`;
+    list.appendChild(c);
+  });
+}
+async function showPw(uid){
+  const u=allU[uid];if(!u)return;
+  const pw=u.password||'(not stored)';
+  await dlg('🔑 User Password','Name: '+(u.name||'?')+'\nEmail: '+(u.email||'?')+'\nPassword: '+pw,'alert','🔑');
+}
+async function ban(uid){if(await confirm('Ban this user?')){await dbPatch('users/'+uid,{banned:true});allU[uid].banned=true;filterUsers();updStats();toast('User banned!','🚫');logAct('Banned: '+(allU[uid].email||uid),'ban');}}
+async function unban(uid){if(await confirm('Unban this user?')){await dbPatch('users/'+uid,{banned:false});allU[uid].banned=false;filterUsers();updStats();toast('User unbanned!');logAct('Unbanned: '+(allU[uid].email||uid));}}
+async function delUser(uid){
+  if(await confirm('Permanently delete this user?')){
+    const nm=allU[uid]&&allU[uid].email?allU[uid].email:uid;
+    await dbDel('users/'+uid);await dbDel('approvalRequests/'+uid);delete allU[uid];
+    filterUsers();updStats();toast('User deleted!','🗑️');logAct('Deleted user: '+nm,'delete');
+  }
+}
+async function togSvc(uid,svcId,show){
+  if(!show)await dbPatch('users/'+uid+'/hiddenServices',{[svcId]:true});
+  else await dbDel('users/'+uid+'/hiddenServices/'+svcId);
+  if(!allU[uid].hiddenServices)allU[uid].hiddenServices={};
+  if(!show)allU[uid].hiddenServices[svcId]=true;else delete allU[uid].hiddenServices[svcId];
+  const sn=svcs.find(x=>x.id===svcId)&&svcs.find(x=>x.id===svcId).name||svcId;
+  toast((show?'Enabled':'Disabled')+': '+sn,show?'✅':'🚫');
+}
+async function hideAllSvcs(uid){
+  const hidden={};svcs.forEach(s=>{hidden[s.id]=true;});
+  await dbPatch('users/'+uid,{hiddenServices:hidden});
+  allU[uid].hiddenServices=hidden;filterUsers();toast('All services hidden!','🙈');
+  logAct('Hidden all services for '+(allU[uid].name||uid));
+}
+async function showAllSvcs(uid){
+  await dbDel('users/'+uid+'/hiddenServices');allU[uid].hiddenServices={};filterUsers();toast('All services shown!','👁');
+  logAct('Shown all services for '+(allU[uid].name||uid));
+}
+async function resetUserSvcs(uid){await dbDel('users/'+uid+'/hiddenServices');allU[uid].hiddenServices={};filterUsers();toast('Services reset!','🔄');}
+
+// ── APPROVALS ──
+async function loadApprovals(){
+  const d=await dbGet('approvalRequests');
+  const list=document.getElementById('appList');
+  if(!d){list.innerHTML='<div class="empty"><div class="eico">✅</div><div class="etxt">No pending approvals.</div></div>';document.getElementById('appBadge').textContent='0';return;}
+  const pending=Object.values(d).filter(x=>x&&x.status==='pending');
+  document.getElementById('appBadge').textContent=pending.length;
+  if(!pending.length){list.innerHTML='<div class="empty"><div class="eico">✅</div><div class="etxt">No pending approvals. All clear!</div></div>';return;}
+  list.innerHTML='';
+  pending.forEach(req=>{
+    const joined=req.requestedAt?new Date(req.requestedAt).toLocaleString():'?';
+    const c=document.createElement('div');c.className='appcrd';
+    const hasDp=req.dp;
+    const avHTML=hasDp?`<img src="${req.dp}" style="width:42px;height:42px;object-fit:cover;border-radius:50%;" alt="">`:
+      `<div style="width:42px;height:42px;border-radius:50%;background:var(--gm);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">👤</div>`;
+    c.innerHTML=`
+      <div class="app-top">
+        <div style="display:flex;align-items:center;gap:10px;flex:1;">
+          ${avHTML}
+          <div>
+            <div style="font-size:.85rem;font-weight:700;color:var(--dark);">${req.name||'N/A'}</div>
+            <div style="font-size:.7rem;color:var(--gray);">📧 ${req.email||'N/A'}</div>
+            ${req.phone?`<div style="font-size:.68rem;color:var(--v1);">📱 ${req.phone}</div>`:''}
+            <div style="font-size:.64rem;color:#CBD5E1;font-family:monospace;">🆔 ${req.uid||''}</div>
+          </div>
+        </div>
+        <span class="bdg bpend">⏳ Pending</span>
+      </div>
+      <div style="font-size:.68rem;color:var(--gray);margin-bottom:9px;">Requested: ${joined}</div>
+      <div class="bgrp">
+        <button class="bsm bgn" onclick="approveUser('${req.uid}')">✅ Approve</button>
+        <button class="bsm brd" onclick="rejectUser('${req.uid}')">❌ Reject</button>
+      </div>`;
+    list.appendChild(c);
+  });
+}
+async function approveUser(uid){
+  if(await confirm('Approve this user? They will get access to all services.')){
+    await dbPatch('users/'+uid,{approved:true,status:'approved',approvedAt:new Date().toISOString(),approvalMsg:'✅ Admin ne aapka account approve kar diya! Ab sari services use karo.',hiddenServices:{}});
+    await dbPatch('approvalRequests/'+uid,{status:'approved'});
+    if(allU[uid]){allU[uid].approved=true;allU[uid].status='approved';}
+    toast('User approved!');logAct('Approved user: '+uid);loadApprovals();updStats();
+  }
+}
+async function rejectUser(uid){
+  const reason=await dlg('❌ Rejection Reason','Why are you rejecting? (shown to user)','prompt','❌','Invalid information provided.');
+  if(reason===null)return;
+  const msg=reason||'Admin ne aapka account reject kar diya.';
+  await dbPatch('users/'+uid,{approved:false,status:'rejected',rejectedAt:new Date().toISOString(),rejectionMsg:msg,approvalMsg:msg});
+  await dbPatch('approvalRequests/'+uid,{status:'rejected'});
+  if(allU[uid]){allU[uid].approved=false;allU[uid].status='rejected';}
+  toast('User rejected!','❌');logAct('Rejected user: '+uid);loadApprovals();updStats();
+}
+
+// ── PASSWORD RESET REQUESTS ──
+async function loadPwRequests(){
+  const d=await dbGet('passwordResetRequests');
+  const list=document.getElementById('pwList');
+  if(!d){list.innerHTML='<div class="empty"><div class="eico">🔑</div><div class="etxt">No password reset requests.</div></div>';document.getElementById('pwBadge').textContent='0';return;}
+  const pending=Object.values(d).filter(x=>x&&x.status==='pending');
+  document.getElementById('pwBadge').textContent=pending.length;
+  if(!pending.length){list.innerHTML='<div class="empty"><div class="eico">🔑</div><div class="etxt">No pending requests. All clear!</div></div>';return;}
+  list.innerHTML='';
+  pending.forEach(req=>{
+    const t=req.requestedAt?new Date(req.requestedAt).toLocaleString():'?';
+    const c=document.createElement('div');c.className='pwrcrd';
+    c.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:7px;margin-bottom:9px;">
+        <div>
+          <div style="font-size:.84rem;font-weight:700;color:var(--dark);">${req.name||'N/A'}</div>
+          <div style="font-size:.7rem;color:var(--gray);">📧 ${req.email||'N/A'}</div>
+          ${req.note?`<div style="font-size:.7rem;color:var(--o1);margin-top:3px;">💬 ${req.note}</div>`:''}
+          <div style="font-size:.63rem;color:#CBD5E1;margin-top:2px;">⏰ ${t}</div>
+        </div>
+        <span class="bdg bpend">⏳ Pending</span>
+      </div>
+      <div class="bgrp">
+        <button class="bsm bpur" onclick="openPwModalFromReq('${req.id}','${req.uid}','${req.name}','${req.email}')">🔐 Reset Password</button>
+        <button class="bsm bgr" onclick="dismissPwReq('${req.id}')">✕ Dismiss</button>
+      </div>`;
+    list.appendChild(c);
+  });
+}
+function openPwModal(uid){
+  const u=allU[uid];
+  curPwReqId=null;curPwUid=uid;
+  document.getElementById('pwModalInfo').textContent='User: '+(u&&u.name||uid)+' | Email: '+(u&&u.email||'?');
+  document.getElementById('pwNewVal').value='';
+  document.getElementById('pwModal').classList.add('on');
+}
+function openPwModalFromReq(reqId,uid,name,email){
+  curPwReqId=reqId;curPwUid=uid;
+  document.getElementById('pwModalInfo').textContent='User: '+name+' | Email: '+email;
+  document.getElementById('pwNewVal').value='';
+  document.getElementById('pwModal').classList.add('on');
+}
+async function doResetPw(){
+  const newPw=document.getElementById('pwNewVal').value.trim();
+  if(!newPw||newPw.length<4)return alert('Password min 4 chars!');
+  if(!curPwUid)return;
+  // Store new password in user record — user will see it on next login
+  await dbPatch('users/'+curPwUid,{password:newPw,newPasswordByAdmin:newPw});
+  if(allU[curPwUid])allU[curPwUid].password=newPw;
+  // Mark request as done
+  if(curPwReqId)await dbPatch('passwordResetRequests/'+curPwReqId,{status:'done',doneAt:new Date().toISOString()});
+  document.getElementById('pwModal').classList.remove('on');
+  toast('Password reset done!','🔐');logAct('Reset password for user: '+curPwUid);
+  if(curPwReqId)loadPwRequests();
+}
+async function dismissPwReq(reqId){
+  await dbPatch('passwordResetRequests/'+reqId,{status:'dismissed'});toast('Dismissed!','✕');loadPwRequests();
+}
+
+// ── BROADCAST ──
+async function loadCurBC(){
+  const m=await dbGet('broadcast');
+  const el=document.getElementById('curBC');
+  if(m&&typeof m==='object'){
+    el.textContent='Text: '+(m.text||'')+(m.imageUrl?'\nImage: '+m.imageUrl:'');
+    // Show fullscreen broadcast if active
+    showBCOverlay(m.text,m.imageUrl);
+  } else if(m){
+    el.textContent=m;
+    showBCOverlay(m,null);
+  } else {
+    el.textContent='No active broadcast.';
+  }
+  el.style.color=m?'var(--dark)':'var(--gray)';
+}
+function showBCOverlay(text,imgUrl){
+  if(!text)return;
+  document.getElementById('bcOvMsg').textContent=text;
+  const imgWrap=document.getElementById('bcOvImgWrap');
+  const img=document.getElementById('bcOvImg');
+  if(imgUrl){img.src=imgUrl;imgWrap.classList.add('show');}else{imgWrap.classList.remove('show');}
+  document.getElementById('bcOverlay').classList.add('on');
+}
+function previewBCFull(){
+  const txt=document.getElementById('bcMsg').value.trim(),imgUrl=document.getElementById('bcImgUrl').value.trim();
+  if(!txt)return alert('Enter message first!');
+  showBCOverlay(txt,imgUrl);
+}
+function updBcPrev(){
+  const txt=document.getElementById('bcMsg').value.trim(),imgUrl=document.getElementById('bcImgUrl').value.trim();
+  const prev=document.getElementById('bcPrev'),pi=document.getElementById('bcPrevImg'),pt=document.getElementById('bcPrevTxt');
+  if(txt){
+    pt.textContent='📢 '+txt;
+    if(imgUrl){pi.src=imgUrl;pi.style.display='block';}else pi.style.display='none';
+    prev.classList.add('on');
+  }else prev.classList.remove('on');
+}
+async function sendBC(){
+  const txt=document.getElementById('bcMsg').value.trim(),imgUrl=document.getElementById('bcImgUrl').value.trim();
+  if(!txt)return alert('Enter a message!');
+  const data=imgUrl?{text:txt,imageUrl:imgUrl}:txt;
+  await dbSet('broadcast',data);loadCurBC();toast('Broadcast sent!');logAct('Broadcast: '+txt.slice(0,50));
+}
+async function clearBC(){
+  await dbDel('broadcast');document.getElementById('bcMsg').value='';document.getElementById('bcImgUrl').value='';
+  document.getElementById('bcPrev').classList.remove('on');loadCurBC();toast('Broadcast cleared!','🗑️');
+}
+
+// ── UPDATE NOTIFICATION ──
+async function sendUpd(){
+  const msg=document.getElementById('updMsg').value.trim();
+  if(!msg)return alert('Enter a message!');
+  const timer=parseInt(document.getElementById('updTimer').value)||0;
+  const confetti=document.getElementById('updConf').value==='true';
+  const data={active:true,title:document.getElementById('updTitle').value.trim()||'New Update!',message:msg,
+    icon:document.getElementById('updIcon').value.trim()||'🔔',imageUrl:document.getElementById('updImg').value.trim()||null,
+    btnText:document.getElementById('updBtn').value.trim()||'👍 Got It!',timer,confetti,sentAt:new Date().toISOString()};
+  await dbSet('updateNotification',data);toast('Update notification sent!');logAct('Update sent: '+msg.slice(0,50));
+}
+async function clearUpd(){await dbSet('updateNotification',{active:false});toast('Notification cleared!','🗑️');}
+
+// ── SETTINGS ──
+async function loadSettings(){
+  const d=await dbGet('settings');if(!d)return;
+  if(d.maintenance){document.getElementById('maintT').checked=d.maintenance.active||false;if(d.maintenance.message)document.getElementById('maintMsg').value=d.maintenance.message;}
+  if(d.hideBranding!==undefined)document.getElementById('brandT').checked=d.hideBranding;
+  if(d.allowReg!==undefined)document.getElementById('regT').checked=d.allowReg;
+  if(d.showHistory!==undefined)document.getElementById('histT').checked=d.showHistory;
+}
+function toggleMaint(){toast(document.getElementById('maintT').checked?'Maintenance ON':'Maintenance OFF',document.getElementById('maintT').checked?'🔧':'✅');}
+async function saveSettings(){
+  await dbSet('settings/maintenance',{active:document.getElementById('maintT').checked,message:document.getElementById('maintMsg').value});
+  await dbSet('settings/hideBranding',document.getElementById('brandT').checked);
+  await dbSet('settings/allowReg',document.getElementById('regT').checked);
+  await dbSet('settings/showHistory',document.getElementById('histT').checked);
+  toast('Settings saved!');logAct('Updated app settings');
+}
+async function chgPass(){
+  const cur=document.getElementById('curPw').value,nw=document.getElementById('newPw').value,cf=document.getElementById('cfPw').value;
+  if(cur!==AP)return showMsg('passE','Current password is wrong!');
+  if(nw.length<4)return showMsg('passE','New password must be at least 4 chars!');
+  if(nw!==cf)return showMsg('passE','Passwords do not match!');
+  AP=nw;localStorage.setItem('rdx_ap',nw);
+  document.getElementById('curPw').value='';document.getElementById('newPw').value='';document.getElementById('cfPw').value='';
+  showMsg('passO','Password changed!','ok');toast('Admin password changed!','🔐');logAct('Admin password changed');
+}
+
+// ── CUSTOMIZE ──
+function pickC(el,c1,c2){
+  document.querySelectorAll('.copt').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');
+  selC1=c1;selC2=c2;
+  document.getElementById('selColorTxt').textContent=el.title||'Custom';
+  // Live preview the color
+  document.documentElement.style.setProperty('--p1',c1);
+  document.documentElement.style.setProperty('--v1',c2);
+  document.documentElement.style.setProperty('--gm','linear-gradient(135deg,'+c1+','+c2+')');
+  document.documentElement.style.setProperty('--gb','linear-gradient(135deg,'+c1+','+c1+'CC,'+c2+')');
+}
+async function loadCustom(){
+  const d=await dbGet('settings/customize');if(!d)return;
+  if(d.name)document.getElementById('cAppNm').value=d.name;
+  if(d.subtitle)document.getElementById('cSub').value=d.subtitle;
+  if(d.telegram)document.getElementById('cTg').value=d.telegram;
+  if(d.footer)document.getElementById('cFoot').value=d.footer;
+  if(d.welcome)document.getElementById('cWelc').value=d.welcome;
+  if(d.icon)document.getElementById('cIco').value=d.icon;
+  if(d.themeColor)selC1=d.themeColor;if(d.themeColor2)selC2=d.themeColor2;
+}
+async function saveCustom(){
+  const d={name:document.getElementById('cAppNm').value,subtitle:document.getElementById('cSub').value,
+    telegram:document.getElementById('cTg').value,footer:document.getElementById('cFoot').value,
+    welcome:document.getElementById('cWelc').value,icon:document.getElementById('cIco').value,
+    themeColor:selC1,themeColor2:selC2,updatedAt:new Date().toISOString()};
+  await dbSet('settings/customize',d);
+  toast('Customization saved! Users will see on refresh.');logAct('Updated customization (theme: '+selC1+')');
+}
+
+// ── CSV EXPORT ──
+function exportCSV(){
+  const keys=Object.keys(allU);if(!keys.length)return alert('No users!');
+  let csv='UID,Name,Email,Phone,Status,Password,Joined\n';
+  keys.forEach(uid=>{const u=allU[uid];if(!u)return;const j=u.createdAt?new Date(u.createdAt).toLocaleDateString():'?';const st=u.banned?'BANNED':u.status||'pending';csv+=`"${uid}","${u.name||''}","${u.email||''}","${u.phone||''}","${st}","${u.password||''}","${j}"\n`;});
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='rdx_users_'+Date.now()+'.csv';a.click();toast('Exported!','📥');logAct('Exported users to CSV');
+}
+
+// ── ACTIVITY ──
+function renderActivity(){
+  const feed=document.getElementById('aFeed');
+  if(!actLog.length){feed.innerHTML='<div class="empty"><div class="eico">📊</div><div class="etxt">No activities yet.</div></div>';return;}
+  feed.innerHTML='';
+  const icons={ban:'🚫',delete:'🗑️',action:'⚡'};
+  actLog.forEach(a=>{
+    const d=document.createElement('div');d.className='aitem';
+    d.innerHTML=`<div class="aico2">${icons[a.type]||'⚡'}</div><div><div class="atxt">${a.msg}</div><div class="atme">${a.time}</div></div>`;
+    feed.appendChild(d);
+  });
+}
+</script>
+</body>
+</html>
